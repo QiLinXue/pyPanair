@@ -1,38 +1,20 @@
-# pyPanair
-A pre/post processor for Panair.  
-"Panair" and "Panin" are not included in this repository.  
-A copy of these software can be obtained at [Public Domain Aeronautical Software](http://www.pdas.com/contents15.html).  
+# PyPanair (UTAT)
+## Instructions (Linux)
+1. `python3 setup.py install`
+2. `cd utat`
+3. `python3 filename.py` (this will create an `some_name.aux` file)
+4. `./panin` (when prompted, type `some_name`)
+5. `./panair` (when prompted, type `a502.in`)
 
-## What can "pyPanair" do?  
-List of things that pyPanair can do (check the examples)
-* Define the geometry of a wing in the LaWGS format (tutorial 1 & 2)
-* Define the geometry of a wing/body configuration in the LaWGS format (tutorial 3)
-* Convert LaWGS format files to stl format (convert_wgs)  
-* Convert agps format files to vtk (legacy Paraview), vtm (multiblock Paraview),
- or dat (multiblock Tecplot) format (convert agps)  
-* Calculate the local lift / pitching moment coefficients from agps files (section_force_calculation)
-* Parse ffmf files (convert_ffmf)  
+An `ffmf` file will be created with aerodynamic data.
 
-## Installation
-Download the repository and type
+6. `python3 analyze.py`
 
-```commandline
-python setup.py install
-```
+It will create a `vtk` file which can then be opened up in Aerolab. After you are done, delete current files with the command:
 
-or if you have git installed, simply type
+7. `sh clean502.sh`
 
-```commandline
-pip install git+https://github.com/SaTa999/pyPanair
-```
-
-## Requirements
-pyPanair requires python 3.5+  
-(tests have only been performed for python 3.6)  
-An [Anaconda3](https://www.continuum.io/) environment is recommended.
-
-## Example
-Example scripts and files are bundled in the "examples" directory.  
-
-## Tutorial
-Tutorials of `pyPanair` are included in `examples` directory.
+## Current Files
+* `mwe.py` A minimal working example of the Agard-B model presented in the original tutorial.
+* `main.py` The final product of the NASA-TM-81787 rocket.
+* `debug.py` A sort of "playground" used for testing work.
