@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 from collections import OrderedDict
 from warnings import warn
-from matplotlib.patches import FancyArrowPatch
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D, proj3d
 import numpy as np
 import pandas as pd
 
@@ -309,48 +306,6 @@ class Network(BasicGeom):
                 raise ValueError("only Networks can be concatenated")
         return Network(np.concatenate(networks, axis=1))
 
-    def plot_wireframe(self, show_corners=True, show_edges=True, show_normvec=True):
-        """ plot the Network as a wireframe
-        :param show_corners: display the corner numbers of the Network
-        :param show_edges: display the edge numbers of the Network
-        :param show_normvec: show a vector pointing out from the front side of the Network
-                            (will not work for skewed Networks and Networks consisting only a pair of Lines)"""
-        fig = plt.figure()
-        ax = Axes3D(fig)
-        ax.set_aspect("equal")
-        x, y, z = (self[:, :, i] for i in range(3))
-        ax.plot_wireframe(x, y, z)
-        # place invisible markers to set the aspect ratio of each axis to be equal
-        max_range = np.array([x.max() - x.min(), y.max() - y.min(), z.max() - z.min()]).max()
-        xb = 0.5 * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][0].ravel() + 0.5 * (x.max() + x.min())
-        yb = 0.5 * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][1].ravel() + 0.5 * (y.max() + y.min())
-        zb = 0.5 * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][2].ravel() + 0.5 * (z.max() + z.min())
-        for xxb, yyb, zzb in zip(xb, yb, zb):
-            ax.plot([xxb], [yyb], [zzb], 'w')
-        ax.set_xlabel("$x$", fontsize=16)
-        ax.set_ylabel("$y$", fontsize=16)
-        ax.set_zlabel("$z$", fontsize=16)
-        rowmid, colmid = (i // 2 for i in self.shape[:2])
-        if show_corners:
-            ax.text(*self[0, 0, :], s="1")
-            ax.text(*self[-1, 0, :], s="2")
-            ax.text(*self[-1, -1, :], s="3")
-            ax.text(*self[0, -1, :], s="4")
-        if show_edges:
-            ax.text(*self[rowmid, 0, :], s="edge1")
-            ax.text(*self[-1, colmid, :], s="edge2")
-            ax.text(*self[rowmid, -1, :], s="edge3")
-            ax.text(*self[0, colmid, :], s="edge4")
-        if show_normvec:
-            v_edge4 = self[rowmid, colmid, :] - self[rowmid, colmid - 1, :]
-            v_edge1 = self[rowmid, colmid, :] - self[rowmid - 1, colmid, :]
-            normvec = np.cross(v_edge1, v_edge4)
-            normvec = normvec / np.linalg.norm(normvec) * max_range / 10.
-            a = ([pos, vec + pos] for (vec, pos) in zip(normvec, self[rowmid, colmid, :]))
-            a = Arrow3D(*a, color="k", mutation_scale=20, arrowstyle="-|>")
-            ax.add_artist(a)
-        plt.show()
-
     def trans(self):
         """transpose the row (axis0) and column(axis1) of the Network"""
         return self.transpose((1, 0, 2))
@@ -608,17 +563,3 @@ def cosspace(start, stop, num, **kwargs):
     """ half cosine interpolation between "start" and "stop"
     """
     return start + (stop - start) * 0.5 * (1 - np.cos(np.linspace(0., np.pi, num, **kwargs)))
-
-
-class Arrow3D(FancyArrowPatch):
-    """a class for drawing a 3D arrow"""
-
-    def __init__(self, xs, ys, zs, *args, **kwargs):
-        FancyArrowPatch.__init__(self, (0, 0), (0, 0), *args, **kwargs)
-        self._verts3d = xs, ys, zs
-
-    def draw(self, renderer):
-        xs3d, ys3d, zs3d = self._verts3d
-        xs, ys, zs = proj3d.proj_transform(xs3d, ys3d, zs3d, renderer.M)
-        self.set_positions((xs[0], ys[0]), (xs[1], ys[1]))
-        FancyArrowPatch.draw(self, renderer)
