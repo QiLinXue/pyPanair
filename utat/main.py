@@ -10,11 +10,11 @@ R = 3.81
 AIRFOIL
 '''
 # Creates the base of the airfoil
-root_airfoil = wgs_creator.read_airfoil("base_airfoil_new.csv", y_coordinate=R, expansion_ratio=1)
+root_airfoil = wgs_creator.read_airfoil("base_airfoil.csv", y_coordinate=R, expansion_ratio=1)
 root_airfoil = root_airfoil.shift((86.84, 0., 0.))
 
 # Creates the tip of the airfoil
-tip_airfoil = wgs_creator.read_airfoil("base_airfoil_new.csv", y_coordinate=R, expansion_ratio=0.5555)
+tip_airfoil = wgs_creator.read_airfoil("base_airfoil.csv", y_coordinate=R, expansion_ratio=0.5555)
 tip_airfoil = tip_airfoil.shift((89.38, 11.43, 0.))
 
 # Connect the base and the tip to create two wings, then rotate them clockwise / counterclockwise
