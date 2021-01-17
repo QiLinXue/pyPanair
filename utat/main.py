@@ -14,14 +14,14 @@ root_airfoil = wgs_creator.read_airfoil("base_airfoil.csv", y_coordinate=R, expa
 root_airfoil = root_airfoil.shift((86.84, 0., 0.))
 
 # Creates the tip of the airfoil
-tip_airfoil = wgs_creator.read_airfoil("tip_airfoil.csv", y_coordinate=R, expansion_ratio=0.5555)
+tip_airfoil = wgs_creator.read_airfoil("base_airfoil.csv", y_coordinate=R, expansion_ratio=0.5555)
 tip_airfoil = tip_airfoil.shift((89.38, 11.43, 0.))
 
 # Connect the base and the tip to create two wings, then rotate them clockwise / counterclockwise
-wing1 = root_airfoil.linspace(tip_airfoil, num=20)
+wing1 = root_airfoil.linspace(tip_airfoil, num=40)
 wing1 = wing1.rotx((0,0,0), angle=45)
 
-wing2 = root_airfoil.linspace(tip_airfoil, num=20)
+wing2 = root_airfoil.linspace(tip_airfoil, num=40)
 wing2 = wing2.rotx((0,0,0), angle=-45)
 
 # Add wings to WGS
@@ -31,25 +31,15 @@ wgs.append_network("wing2", wing2, 1)
 '''
 FILL IN WING TOP
 '''
-# Creates a copy of the tips of the airfoil
-wing_base_line = tip_airfoil.copy()  
-wing_base_line = wing_base_line.flip()
+wingtip_upper, wingtip_lower = tip_airfoil.rotx((0,0,0), angle=45).split_half()
+wingtip_lower = wingtip_lower.flip()
+wingtip = wingtip_upper.linspace(wingtip_lower, num = 5)
+wgs.append_network("wingbase1", wingtip, 1)
 
-# create a `Line` with 7 identical points (the center of the fin tip)
-wing_base_line = wing_base_line.replace(x=92.17, y=15.24, z=0.)  # create a `Line` with 13 identical points (the center of the circle)
-wing_base_line = wing_base_line.rotx((0,0,0), angle=45)
-
-# Merge the two lines together to form a solid surface, and attach it to WGS
-wing_base = wing_base_line.linspace(tip_airfoil.rotx((0,0,0), angle=45), num=7)
-wgs.append_network("wingbase1", wing_base, boun_type=5)
-
-# The same thing is repeated, but for the other wing
-wing_base_line = tip_airfoil.copy()
-wing_base_line = wing_base_line.replace(x=92.17, y=15.24, z=0.)
-wing_base_line = wing_base_line.rotx((0,0,0), angle=-45)
-wing_base = wing_base_line.linspace(tip_airfoil.rotx((0,0,0), angle=-45), num=7)
-wgs.append_network("wingbase2", wing_base, boun_type=5)
-
+wingtip_upper, wingtip_lower = tip_airfoil.rotx((0,0,0), angle=-45).split_half()
+wingtip_lower = wingtip_lower.flip()
+wingtip = wingtip_upper.linspace(wingtip_lower, num = 5)
+wgs.append_network("wingbase2", wingtip, 1)
 '''
 NOSE CONE
 '''
@@ -68,18 +58,18 @@ nose_line[:,1] = y_nose
 
 fbody_p1 = wgs_creator.Point(nose_line[-1])  # point at the end of the nose_line
 fbody_p2 = fbody_p1.replace(x=86.84)
-fbody_line = fbody_p1.linspace(fbody_p2, num=10)  # interpolate fbody_p1 and fbody_p2
+fbody_line = fbody_p1.linspace(fbody_p2, num=30)  # interpolate fbody_p1 and fbody_p2
 
 nose_fbody_line = nose_line.concat(fbody_line)  # concatenate nose_line & fbody_line
 
 nose_fbody_up = list()
-for i in np.linspace(0, 90, 7):
+for i in np.linspace(0, 90, 11):
     line = nose_fbody_line.rotx(rotcenter=nose_fbody_line[0], angle=i)
     nose_fbody_up.append(line)
 nose_fbody_up = wgs_creator.Network(nose_fbody_up)
 
 nose_fbody_low = list()
-for i in np.linspace(-90, 0, 7):
+for i in np.linspace(-90, 0, 11):
     line = nose_fbody_line.rotx(rotcenter=nose_fbody_line[0], angle=i)
     nose_fbody_low.append(line)
 nose_fbody_low = wgs_creator.Network(nose_fbody_low)
@@ -97,7 +87,7 @@ wingroot_up, wingroot_low = root_airfoil.split_half()
 mbody_line = wingroot_up.replace(z=0.)
 
 mbody_up = list()
-for i in np.linspace(90, 45, 4)[:-1]:
+for i in np.linspace(90, 45, 6)[:-1]:
     line = mbody_line.rotx((0,0,0), angle=i)
     mbody_up.append(line)
 mbody_up.append(wingroot_up.rotx((0,0,0), angle=45))
@@ -107,7 +97,7 @@ wgs.append_network("mbody_up", mbody_up, 1)
 wingroot_low = wingroot_low.flip()
 mbody_low = list()
 mbody_low.append(wingroot_low.rotx((0,0,0), angle=45))
-for i in np.linspace(45, 0, 4)[1:]:
+for i in np.linspace(45, 0, 6)[1:]:
     line = mbody_line.rotx((0,0,0), angle=i)
     mbody_low.append(line)
 mbody_low = wgs_creator.Network(mbody_low)
@@ -121,7 +111,7 @@ wingroot_up, wingroot_low = root_airfoil.split_half()
 mbody_line = wingroot_up.replace(z=0.)
 
 mbody_up = list()
-for i in np.linspace(0, -45, 4)[:-1]:
+for i in np.linspace(0, -45, 6)[:-1]:
     line = mbody_line.rotx((0,0,0), angle=i)
     mbody_up.append(line)
 mbody_up.append(wingroot_up.rotx((0,0,0), angle=-45))
@@ -131,7 +121,7 @@ wgs.append_network("mbody_up2", mbody_up, 1)
 wingroot_low = wingroot_low.flip()
 mbody_low = list()
 mbody_low.append(wingroot_low.rotx((0,0,0), angle=-45))
-for i in np.linspace(-45, -90, 4)[1:]:
+for i in np.linspace(-45, -90, 6)[1:]:
     line = mbody_line.rotx((0,0,0), angle=i)
     mbody_low.append(line)
 mbody_low = wgs_creator.Network(mbody_low)
@@ -149,14 +139,14 @@ aft_body_p2 = aft_body_p1.shift((4.06, -0.01*R, 0.))
 aft_body_line = aft_body_p1.linspace(aft_body_p2, num=5)
 
 aft_body_up = list()
-for i in np.linspace(0, 90, num=7):
+for i in np.linspace(0, 90, num=11):
     line = aft_body_line.rotx((0,0,0), angle=i)
     aft_body_up.append(line)
 aft_body_up = wgs_creator.Network(aft_body_up)
 wgs.append_network("abody_up", aft_body_up, 1)
 
 aft_body_low = list()
-for i in np.linspace(-90, 0, num=7):
+for i in np.linspace(-90, 0, num=11):
     line = aft_body_line.rotx((0,0,0), angle=i)
     aft_body_low.append(line)
 aft_body_low = wgs_creator.Network(aft_body_low)
