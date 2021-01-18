@@ -6,22 +6,29 @@ wgs = wgs_creator.LaWGS("main")
 L = 19.05
 R = 3.81
 
+# Control Panel... get it?
+wing_panels = 40
+wing_tip_panels = 5
+nose_cone_panels = 20 
+aft_body_panels = 5
+base_panels = 3
+
 '''
 AIRFOIL
 '''
 # Creates the base of the airfoil
-root_airfoil = wgs_creator.read_airfoil("base_airfoil.csv", y_coordinate=R, expansion_ratio=1)
+root_airfoil = wgs_creator.read_airfoil("base_airfoil_new.csv", y_coordinate=R, expansion_ratio=1)
 root_airfoil = root_airfoil.shift((86.84, 0., 0.))
 
 # Creates the tip of the airfoil
-tip_airfoil = wgs_creator.read_airfoil("base_airfoil.csv", y_coordinate=R, expansion_ratio=0.5555)
+tip_airfoil = wgs_creator.read_airfoil("base_airfoil_new.csv", y_coordinate=R, expansion_ratio=0.5555)
 tip_airfoil = tip_airfoil.shift((89.38, 11.43, 0.))
 
 # Connect the base and the tip to create two wings, then rotate them clockwise / counterclockwise
-wing1 = root_airfoil.linspace(tip_airfoil, num=40)
+wing1 = root_airfoil.linspace(tip_airfoil, num=wing_panels)
 wing1 = wing1.rotx((0,0,0), angle=45)
 
-wing2 = root_airfoil.linspace(tip_airfoil, num=40)
+wing2 = root_airfoil.linspace(tip_airfoil, num=wing_panels)
 wing2 = wing2.rotx((0,0,0), angle=-45)
 
 # Add wings to WGS
@@ -33,12 +40,12 @@ FILL IN WING TOP
 '''
 wingtip_upper, wingtip_lower = tip_airfoil.rotx((0,0,0), angle=45).split_half()
 wingtip_lower = wingtip_lower.flip()
-wingtip = wingtip_upper.linspace(wingtip_lower, num = 5)
+wingtip = wingtip_upper.linspace(wingtip_lower, num = wing_tip_panels)
 wgs.append_network("wingbase1", wingtip, 1)
 
 wingtip_upper, wingtip_lower = tip_airfoil.rotx((0,0,0), angle=-45).split_half()
 wingtip_lower = wingtip_lower.flip()
-wingtip = wingtip_upper.linspace(wingtip_lower, num = 5)
+wingtip = wingtip_upper.linspace(wingtip_lower, num = wing_tip_panels)
 wgs.append_network("wingbase2", wingtip, 1)
 '''
 NOSE CONE
@@ -49,10 +56,9 @@ def g(x):
 
     return np.sqrt(rho**2-(L-x)**2)+R-rho
 
-n_nose = 20  # number of points in the line
-x_nose = np.linspace(0., L, num=n_nose)  # x-coordinates of the line
+x_nose = np.linspace(0., L, num=nose_cone_panels)  # x-coordinates of the line
 y_nose = g(x_nose)  # y-coordinates of the line
-nose_line = wgs_creator.Line(np.zeros((n_nose, 3)))  # create an array of zeros
+nose_line = wgs_creator.Line(np.zeros((nose_cone_panels, 3)))  # create an array of zeros
 nose_line[:,0] = x_nose
 nose_line[:,1] = y_nose
 
@@ -136,7 +142,7 @@ AFT BODY
 '''
 aft_body_p1 = wgs_creator.Point(root_airfoil[0])  # TE of the root airfoil
 aft_body_p2 = aft_body_p1.shift((4.06, -0.01*R, 0.))
-aft_body_line = aft_body_p1.linspace(aft_body_p2, num=5)
+aft_body_line = aft_body_p1.linspace(aft_body_p2, num=aft_body_panels)
 
 aft_body_up = list()
 for i in np.linspace(0, 90, num=11):
@@ -161,7 +167,7 @@ body_base_line_low = aft_body_low.edge(3)
 body_base_line_low = body_base_line_low.flip()  
 body_base_line = body_base_line_up.concat(body_base_line_low)
 body_base_line2 = body_base_line.replace(102.33, y=0., z=0.)  # create a `Line` with 13 identical points (the center of the circle)
-body_base = body_base_line.linspace(body_base_line2, num=3)
+body_base = body_base_line.linspace(body_base_line2, num=base_panels)
 wgs.append_network("bodybase", body_base, boun_type=5)
 
 '''
@@ -188,6 +194,7 @@ wgs.create_stl(include_wake=False) # to see the wakes, set this to True
 wgs.create_wgs()
 
 # CREATE AUX FILE
-wgs.create_aux(alpha=3, mach=0.70, cbar=11.43, span=11.43, sref=8*101.613, xref=63.60, zref=0.)
+# wgs.create_aux(alpha=1.62, mach=2.36, cbar=11.43, span=11.43, sref=2*101.613, xref=63.60, zref=0.)
+wgs.create_aux(alpha=1.62, mach=2.36, cbar=9.9, span=30.48, sref=101.613, xref=63.60, zref=0.)
 
 print("done")
