@@ -110,4 +110,4 @@ wgs.append_network("bodywake", body_wake, 20)
 # Create
 wgs.create_stl()
 wgs.create_wgs()
-wgs.create_aux(alpha=0, mach=3, cbar=2.3093, span=4., sref=6.928, xref=5.943, zref=0.)
+wgs.create_aux(alpha=(-2.47,-.43,1.62,3.67,5.72,7.81,9.91), mach=2.36, cbar=2.3093, span=4., sref=6.928, xref=5.943, zref=0.)
