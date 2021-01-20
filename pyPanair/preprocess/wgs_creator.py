@@ -29,7 +29,7 @@ class LaWGS:
         self._networks[name] = network
         self._boundary_types[name] = boun_type
 
-    def create_wgs(self, filename=None):
+    def create_wgs(self, roll=0, filename=None):
         """ create a .wgs file from a LaWGS object"""
         if filename is None:
             filename = "{}.wgs".format(self.name)
@@ -37,7 +37,7 @@ class LaWGS:
         for net_name, net in self._networks.items():
             wgs += "{}\n".format(net_name)
             num_rows, num_columns = net.shape[:2]
-            wgs += "1 {} {} 0   0 0 0   0 0 0    1 1 1  0\n".format(num_rows, num_columns)
+            wgs += "1 {} {} 0   {} 0 0   0 0 0    1 1 1  0\n".format(num_rows, num_columns, roll)
             wgs += net.network2wgs()
         with open(filename, "w") as f:
             f.write(wgs)
