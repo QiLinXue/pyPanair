@@ -18,7 +18,7 @@ tip_airfoil = wgs_creator.read_airfoil("base_airfoil.csv", y_coordinate=R, expan
 tip_airfoil = tip_airfoil.shift((89.38, 11.43, 0.))
 
 # Connect the base and the tip to create two wings, then rotate them clockwise / counterclockwise
-wing1 = root_airfoil.linspace(tip_airfoil, num=40)
+wing1 = tip_airfoil.linspace(root_airfoil, num=40)
 wing1 = wing1.rotx((0,0,0), angle=45)
 
 wing2 = root_airfoil.linspace(tip_airfoil, num=40)

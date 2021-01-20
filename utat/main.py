@@ -17,15 +17,16 @@ base_panels = 3
 AIRFOIL
 '''
 # Creates the base of the airfoil
-root_airfoil = wgs_creator.read_airfoil("base_airfoil_new.csv", y_coordinate=R, expansion_ratio=1)
+root_airfoil = wgs_creator.read_airfoil("base_airfoil.csv", y_coordinate=R, expansion_ratio=1)
 root_airfoil = root_airfoil.shift((86.84, 0., 0.))
 
 # Creates the tip of the airfoil
-tip_airfoil = wgs_creator.read_airfoil("base_airfoil_new.csv", y_coordinate=R, expansion_ratio=0.5555)
+tip_airfoil = wgs_creator.read_airfoil("base_airfoil.csv", y_coordinate=R, expansion_ratio=0.5555)
 tip_airfoil = tip_airfoil.shift((89.38, 11.43, 0.))
 
 # Connect the base and the tip to create two wings, then rotate them clockwise / counterclockwise
 wing1 = root_airfoil.linspace(tip_airfoil, num=wing_panels)
+
 wing1 = wing1.rotx((0,0,0), angle=45)
 
 wing2 = root_airfoil.linspace(tip_airfoil, num=wing_panels)
@@ -173,7 +174,7 @@ wgs.append_network("bodybase", body_base, boun_type=5)
 '''
 DEFINE WAKES
 '''
-wake_length = 11.43 * 50
+wake_length = 100 + 11.43 * 50
 
 wing_wake1 = wing1.make_wake(3, wake_length)
 wgs.append_network("wingwake1", wing_wake1, 18)
@@ -191,10 +192,9 @@ wgs.append_network("bbwake_low", body_base_wake_low, -18)
 wgs.create_stl(include_wake=False) # to see the wakes, set this to True
 
 # CREATE WGS FILE
-wgs.create_wgs()
+wgs.create_wgs(roll=0)
 
 # CREATE AUX FILE
-# wgs.create_aux(alpha=1.62, mach=2.36, cbar=11.43, span=11.43, sref=2*101.613, xref=63.60, zref=0.)
-wgs.create_aux(alpha=1.62, mach=2.36, cbar=9.9, span=30.48, sref=101.613, xref=63.60, zref=0.)
+wgs.create_aux(alpha=2.47, mach=1.60, cbar=9.9, span=30.48, sref=48.315, xref=63.60, zref=0.)
 
 print("done")
