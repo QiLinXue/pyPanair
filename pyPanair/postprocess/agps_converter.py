@@ -62,7 +62,7 @@ def write_vtk(n_wake=0, outputname="agps", inputfile="agps"):
     All networks will be merged into one block
     Therefore, user are advised to omit 'wakes' by specifying the 'n_wakes'"""
     data = read_agps(inputfile)  # read agps file & specify the number of networks to omit
-    print("n_wake = ", n_wake)
+    # print("n_wake = ", n_wake)
     # write the header of the vtk file
     vtk = "# vtk DataFile Version 2.0\n"
     vtk += "scalar\n"
@@ -78,7 +78,7 @@ def write_vtk(n_wake=0, outputname="agps", inputfile="agps"):
         net = data[i]
         n_row = int(net.shape[0])
         n_col = int(net.shape[1])
-        print("network {} shape: ".format(i + 1), net.shape)
+        # print("network {} shape: ".format(i + 1), net.shape)
         base_square = np.array((0, n_col, n_col + 1, 1))
         for j in range(n_row):
             for k in range(n_col):
@@ -112,7 +112,7 @@ def write_vtm(n_wake=0, outputname="agps", inputfile="agps"):
     each network will become a different vtu file
     to open all vtu files at the same time, open the vtm file with paraview"""
     data = read_agps(inputfile)  # read agps file & specify the number of networks to omit
-    print("n_wake = ", n_wake)
+    # print("n_wake = ", n_wake)
     # write header of vtm file
     vtm = "<?xml version=\"1.0\"?>\n"
     vtm += "<VTKFile type=\"vtkMultiBlockDataSet\" version=\"1.0\" byte_order=\"LittleEndian\">\n"
@@ -137,7 +137,7 @@ def write_vtm(n_wake=0, outputname="agps", inputfile="agps"):
         n_cp = net.shape[2] - 4
         n_row = int(net.shape[0])
         n_col = int(net.shape[1])
-        print("network {} shape: ".format(i), net.shape)
+        # print("network {} shape: ".format(i), net.shape)
         n_points = n_row * n_col
         n_cells = (n_row - 1) * (n_col - 1)
         vtu += "    <Piece NumberOfPoints=\"{}\" NumberOfCells=\"{}\">\n".format(n_points, n_cells)
@@ -200,7 +200,7 @@ def write_vtm(n_wake=0, outputname="agps", inputfile="agps"):
 def write_tec(n_wake=0, outputname="agps", inputfile="agps"):
     """convert agps networks to tecplot finite element quadrilaterals"""
     data = read_agps(inputfile)  # read agps file & specify the number of networks to omit
-    print("n_wake = ", n_wake)
+    # print("n_wake = ", n_wake)
     # write header
     n_headers = data[0].shape[2]  # number of headers (e.g. 8 for "irow, x, y, z, cp1, cp2, cp3, cp4")
     n_cp = n_headers - 4  # number of different cps in agps file
@@ -216,7 +216,7 @@ def write_tec(n_wake=0, outputname="agps", inputfile="agps"):
         net = data[i]
         n_row = int(net.shape[0])
         n_col = int(net.shape[1])
-        print("network {} shape: ".format(i + 1), net.shape)
+        # print("network {} shape: ".format(i + 1), net.shape)
         n_points = n_row * n_col
         n_elements = (n_row - 1) * (n_col - 1)
         tec += "ZONE T=\"MIXED\", N={}, E={}, DATAPACKING=BLOCK," \

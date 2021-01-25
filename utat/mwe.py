@@ -71,14 +71,14 @@ aft_body_p2 = aft_body_p1.shift((1.402, -0.05, 0.))
 aft_body_line = aft_body_p1.linspace(aft_body_p2, num=6)
 
 aft_body_up = list()
-for i in np.linspace(0, 90, num=7):
+for i in np.linspace(0, 90, num=6):
     line = aft_body_line.rotx((0,0,0), angle=i)
     aft_body_up.append(line)
 aft_body_up = wgs_creator.Network(aft_body_up)
 wgs.append_network("abody_up", aft_body_up, 1)
 
 aft_body_low = list()
-for i in np.linspace(-90, 0, num=7):
+for i in np.linspace(-90, 0, num=6):
     line = aft_body_line.rotx((0,0,0), angle=i)
     aft_body_low.append(line)
 aft_body_low = wgs_creator.Network(aft_body_low)
@@ -110,4 +110,4 @@ wgs.append_network("bodywake", body_wake, 20)
 # Create
 wgs.create_stl()
 wgs.create_wgs()
-wgs.create_aux(alpha=(-2.47,-.43,1.62,3.67,5.72,7.81,9.91), mach=2.36, cbar=2.3093, span=4., sref=6.928, xref=5.943, zref=0.)
+wgs.create_aux(alpha=2.47, mach=2.36, cbar=2.3093, span=4., sref=6.928, xref=5.943, zref=0.)

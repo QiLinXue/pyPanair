@@ -1,0 +1,37 @@
+ ++ Running A502, version: i00
+ version id = ht2 (12 feb 92) boeing ver i00  
+  real length, integer length, ratio:    8   4   2
+ initialz   cpu time:     0.001
+ input      cpu time:     0.014
+ init       cpu time:     0.014
+ geometry   cpu time:     0.101
+ singular   cpu time:     0.244
+ cntrl pt   cpu time:     0.254
+ bndy cnd   cpu time:     0.279
+ ffgen      cpu time:     0.330
+ TIMING SUMMARY: vin,krn,phi,vel,vsp,near-    0.757722    0.562068    3.548097    0.053108    0.139577    2.919009
+ TIMING SUMMARY: setup,pic-s,block,assy-    0.125419    8.708896    0.546357    0.594442
+ closms on unit 68   header record:   24001      48       1      47
+ closms on unit  4   header record:   24002   53440   53393      47
+  ft04 (pic file) done.  index lth-24001  cp count- 2734  nwv recd- 2735 
+ pic cost   cpu time:    10.386
+ closms on unit 20   header record:      57    2595    2594       1
+ closms on unit 19   header record:     123   27214   27213       1
+ closms on unit  4   header record:   24002   53440   53393      47
+ aic cost   cpu time:    10.949
+ closms on unit 19   header record:     123   27215   27213       1
+  ft19 (l*u) done.  nhdat:      0 250000   2634      2    249     56     
+ 1-st factor done
+ closms on unit 19   header record:     123   27215   27213       1
+ closms on unit 28   header record:      12      24      23       1
+ 1-st solve done
+  direct solution, no iteration performed                                
+  ft09 (singularity file) complete                                       
+ mtrxsoln   cpu time:    28.332
+ pppdq      cpu time:    28.440
+ closms on unit 49   header record:     751     445     443       2
+ closms on unit  4   header record:   24002   53440   53393      47
+ output     cpu time:    29.249
+ closms on unit 24   header record:     202     310     309       1
+ closms on unit 26   header record:     302      67      66       1
+ closms on unit  2   header record:   18001    4707    4671      36

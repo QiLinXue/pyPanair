@@ -9,19 +9,21 @@ R = 3.81
 # Control Panel... get it?
 wing_panels = 40
 wing_tip_panels = 5
-nose_cone_panels = 20 
-aft_body_panels = 5
-base_panels = 3
+tip_nose_cone_panels = 20 # only relevant if
+nose_cone_panels = 40
+body_panels = 30
+aft_body_panels = 15
+base_panels = 9
 
 '''
 AIRFOIL
 '''
 # Creates the base of the airfoil
-root_airfoil = wgs_creator.read_airfoil("base_airfoil.csv", y_coordinate=R, expansion_ratio=1)
+root_airfoil = wgs_creator.read_airfoil("real_base_airfoil_detailed.csv", y_coordinate=R, expansion_ratio=1)
 root_airfoil = root_airfoil.shift((86.84, 0., 0.))
 
 # Creates the tip of the airfoil
-tip_airfoil = wgs_creator.read_airfoil("base_airfoil.csv", y_coordinate=R, expansion_ratio=0.5555)
+tip_airfoil = wgs_creator.read_airfoil("real_tip_airfoil_detailed.csv", y_coordinate=R, expansion_ratio=1)
 tip_airfoil = tip_airfoil.shift((89.38, 11.43, 0.))
 
 # Connect the base and the tip to create two wings, then rotate them clockwise / counterclockwise
@@ -57,6 +59,36 @@ def g(x):
 
     return np.sqrt(rho**2-(L-x)**2)+R-rho
 
+def get_xa():
+    rho = (R**2+L**2)/(2*R)
+    x_0 = L - np.sqrt((rho-r_n)**2-(rho-R)**2)
+    y_t = r_n*(rho-R)/(rho-r_n)
+    x_t = x_0 - np.sqrt(r_n**2 - y_t**2)
+    x_a = x_0 - r_n
+    return x_a, x_t
+
+def blunted_tip(x):
+    rho = (R**2+L**2)/(2*R)
+    x_0 = L - np.sqrt((rho-r_n)**2-(rho-R)**2)
+    y_t = r_n*(rho-R)/(rho-r_n)
+    x_t = x_0 - np.sqrt(r_n**2 - y_t**2)
+    return np.sqrt(r_n**2-(x_0-x)**2)
+
+def blunted_cone(x):
+    global x_a
+
+    r_n = 1
+    rho = (R**2+L**2)/(2*R)
+    x_0 = L - np.sqrt((rho-r_n)**2-(rho-R)**2)
+    y_t = r_n*(rho-R)/(rho-r_n)
+    x_t = x_0 - np.sqrt(r_n**2 - y_t**2)
+    x_a = x_0 - r_n
+
+
+    return np.sqrt(rho**2-(L-x)**2)+R-rho
+'''
+# FOLLOWING LINES ARE FOR NORMAL TIP
+'''
 x_nose = np.linspace(0., L, num=nose_cone_panels)  # x-coordinates of the line
 y_nose = g(x_nose)  # y-coordinates of the line
 nose_line = wgs_creator.Line(np.zeros((nose_cone_panels, 3)))  # create an array of zeros
@@ -65,9 +97,35 @@ nose_line[:,1] = y_nose
 
 fbody_p1 = wgs_creator.Point(nose_line[-1])  # point at the end of the nose_line
 fbody_p2 = fbody_p1.replace(x=86.84)
-fbody_line = fbody_p1.linspace(fbody_p2, num=30)  # interpolate fbody_p1 and fbody_p2
+fbody_line = fbody_p1.linspace(fbody_p2, num=body_panels)  # interpolate fbody_p1 and fbody_p2
 
 nose_fbody_line = nose_line.concat(fbody_line)  # concatenate nose_line & fbody_line
+'''
+# FOLLOWING LINES ARE FOR BLUNTED TIP
+
+r_n = 0.2
+x_a, x_t = get_xa()
+
+x_tip = np.linspace(x_a, x_t, num=tip_nose_cone_panels)
+y_tip = np.array([blunted_tip(x) for x in x_tip])
+tip_line = wgs_creator.Line(np.zeros((tip_nose_cone_panels, 3)))  # create an array of zeros
+tip_line[:,0] = x_tip
+tip_line[:,1] = y_tip
+
+x_nose = np.linspace(x_t, L, num=nose_cone_panels)  # x-coordinates of the line
+y_nose = blunted_cone(x_nose)  # y-coordinates of the line
+
+nose_line = wgs_creator.Line(np.zeros((nose_cone_panels, 3)))  # create an array of zeros
+nose_line[:,0] = x_nose
+nose_line[:,1] = y_nose
+
+fbody_p1 = wgs_creator.Point(nose_line[-1])  # point at the end of the nose_line
+fbody_p2 = fbody_p1.replace(x=86.84)
+fbody_line = fbody_p1.linspace(fbody_p2, num=body_panels)  # interpolate fbody_p1 and fbody_p2
+
+tip_nose_line = tip_line.concat(nose_line)  # concatenate nose_line & fbody_line
+nose_fbody_line = tip_nose_line.concat(fbody_line)  # concatenate nose_line & fbody_line
+'''
 
 nose_fbody_up = list()
 for i in np.linspace(0, 90, 11):
@@ -85,7 +143,7 @@ wgs.append_network("n_fb_up", nose_fbody_up, 1)
 wgs.append_network("n_fb_low", nose_fbody_low, 1)
 
 '''
-PART WHERE WINGS ARE ATTACHED TO
+# PART WHERE WINGS ARE ATTACHED TO
 '''
 
 # AROUND WING 1
