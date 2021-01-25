@@ -31,6 +31,10 @@ def check_dependencies():
         import pandas
     except ImportError:
         install_requires.append('pandas')
+    try:
+        import prettytable
+    except ImportError:
+        install_requires.append('prettytable')
     return install_requires
 
 

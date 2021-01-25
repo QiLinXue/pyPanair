@@ -18,3 +18,4 @@ rm panin.tmp
 rm panin.dbg
 rm panair.err
 rm panair.out
+rm fort.5
